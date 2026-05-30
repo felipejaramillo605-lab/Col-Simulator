@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Las Bananeras v.4</title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Las Bananeras v3.0</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;1,400&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #111009; --panel: #1c1609; --panel2: #221d0d; --border: #3d2e0e;
+      --gold: #d4a832; --gold2: #f0cc60; --gold-dim: #7a5c10;
+      --green: #3fa85f; --yellow: #e8b830; --red: #d44030; --blue: #3a7ec8;
+      --white: #f2e8cc; --muted: #7a6840;
+      --tag-r: #c0392b; --tag-c: #2471a3; --tag-l: #1e8449; --tag-h: #8e44ad;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Barlow', sans-serif; background: var(--bg);
+      color: var(--white); min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse 60% 50% at 15% 60%, rgba(80,50,5,.25) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 85% 20%, rgba(50,35,5,.2) 0%, transparent 70%);
+    }
+    /* HEADER */
+    #header { text-align:center; padding:20px 16px 12px; border-bottom:2px solid var(--border); background:linear-gradient(180deg,#080600 0%,transparent 100%); }
+    #header h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(2.8rem,8vw,5rem); letter-spacing:6px; color:var(--gold); text-shadow:3px 3px 0 #5a3800,0 0 50px rgba(212,168,50,.25); line-height:1; }
+    .hdr-sub { font-family:'Barlow Condensed',sans-serif; font-size:.8rem; letter-spacing:3px; color:var(--muted); text-transform:uppercase; margin-top:3px; }
+    #year-banner { display:inline-block; margin-top:9px; background:var(--gold); color:var(--bg); font-family:'Bebas Neue',sans-serif; font-size:1.05rem; letter-spacing:3px; padding:3px 22px; border-radius:2px; }
+    /* GAME */
+    #game { width:100%; max-width:1020px; margin:0 auto; padding:14px 12px 50px; display:none; flex-direction:column; gap:13px; }
+    /* OVERLAYS */
+    .overlay-screen { position:fixed; inset:0; background:rgba(0,0,0,.93); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
+    .overlay-card { background:var(--panel); border:2px solid var(--gold); border-radius:14px; max-width:650px; width:100%; padding:36px 28px; text-align:center; max-height:90vh; overflow-y:auto; }
+    .overlay-card h2 { font-family:'Bebas Neue',sans-serif; font-size:2.2rem; letter-spacing:3px; color:var(--gold); margin-bottom:16px; }
+    .overlay-card::-webkit-scrollbar { width: 8px; }
+    .overlay-card::-webkit-scrollbar-track { background: var(--panel2); border-radius: 4px; }
+    .overlay-card::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 4px; }
+    .diff-btn { display:block; width:100%; padding:15px; margin-bottom:10px; font-family:'Bebas Neue',sans-serif; font-size:1.3rem; letter-spacing:2px; background:rgba(212,168,50,.1); color:var(--white); border:1px solid var(--gold); border-radius:8px; cursor:pointer; transition:all .3s; }
+    .diff-btn:hover { background:var(--gold); color:var(--bg); transform:translateY(-2px); }
+    .diff-desc { font-size:.8rem; font-family:'Barlow Condensed',sans-serif; color:var(--muted); display:block; margin-top:5px; text-transform:none; }
+    /* STATS */
+    #stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:9px; }
+    @media(max-width:580px) { #stats-grid { grid-template-columns:repeat(2,1fr); } }
+    .stat-card { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:11px 13px; position:relative; overflow:hidden; }
+    .stat-card::before { content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--ac,var(--gold)); }
+    .stat-label { font-family:'Barlow Condensed',sans-serif; font-size:.65rem; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:3px; }
+    .stat-value { font-family:'Bebas Neue',sans-serif; font-size:2rem; line-height:1; color:var(--white); }
+    .stat-bar-bg { margin-top:5px; height:5px; background:var(--border); border-radius:3px; overflow:hidden; }
+    .stat-bar-fill { height:100%; border-radius:3px; transition:width .7s ease,background .4s; }
+    .stat-delta { position:absolute; top:9px; right:9px; font-family:'Barlow Condensed',sans-serif; font-size:.8rem; font-weight:700; opacity:0; transition:opacity .3s; }
+    .stat-delta.show { opacity:1; }
+    /* EVENTS */
+    #event-box { background:var(--panel); border:1px solid var(--border); border-left:4px solid var(--gold); border-radius:6px; padding:12px 15px; font-family:'Barlow Condensed',sans-serif; font-size:.95rem; font-weight:600; color:var(--gold); display:flex; flex-direction:column; gap:8px; animation:fadeUp .4s ease; }
+    .ev-item { display:flex; align-items:center; gap:10px; background:rgba(0,0,0,.2); padding:5px 10px; border-radius:4px; }
+    .ev-item.ev-warning { border-left:3px solid var(--red); }
+    .ev-item.ev-conditional { border-left:3px solid #f39c12; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(-5px);}to{opacity:1;transform:none;} }
+    /* SECTION TITLE */
+    .section-title { font-family:'Bebas Neue',sans-serif; font-size:1rem; letter-spacing:3px; color:var(--gold-dim); margin-bottom:-4px; display:flex; align-items:center; gap:8px; }
+    .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+    /* DECISION GROUP */
+    .decision-group { background:var(--panel); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+    .decision-header { display:flex; align-items:center; gap:10px; padding:11px 16px; background:rgba(255,255,255,.04); border-bottom:1px solid var(--border); cursor:pointer; user-select:none; transition:background .2s; }
+    .decision-header:hover { background:rgba(255,255,255,.07); }
+    .dh-icon { font-size:1.2rem; }
+    .dh-title { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:3px; color:var(--gold-dim); }
+    .dh-sel { margin-left:auto; font-family:'Barlow Condensed',sans-serif; font-size:.8rem; color:var(--green); font-weight:700; opacity:0; transition:opacity .3s; }
+    .dh-sel.show { opacity:1; }
+    .dh-arrow { margin-left:6px; color:var(--muted); font-size:.8rem; transition:transform .3s; }
+    .decision-header.open .dh-arrow { transform:rotate(180deg); }
+    /* CARDS */
+    .cards-wrap { display:none; padding:12px; gap:9px; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); }
+    .choice-card { background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:13px 14px; cursor:pointer; transition:all .2s; position:relative; overflow:hidden; }
+    .choice-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--ac2,var(--border)); }
+    .choice-card:hover { border-color:var(--gold-dim); background:rgba(255,255,255,.04); }
+    .choice-card.selected { border-color:var(--gold); background:rgba(212,168,50,.1); box-shadow:0 0 0 1px var(--gold); }
+    .card-tag { font-family:'Barlow Condensed',sans-serif; font-size:.58rem; letter-spacing:2.5px; text-transform:uppercase; padding:2px 8px; border-radius:20px; display:inline-block; margin-bottom:6px; }
+    .tag-R { background:rgba(192,57,43,.25); color:#e05040; }
+    .tag-C { background:rgba(36,113,163,.25); color:#5ba3d4; }
+    .tag-L { background:rgba(30,132,73,.25); color:#3dc070; }
+    .tag-H { background:rgba(142,68,173,.25); color:#c39bd3; }
+    .card-name { font-family:'Barlow Condensed',sans-serif; font-size:1.05rem; font-weight:700; color:var(--white); display:block; margin-bottom:4px; line-height:1.2; }
+    .card-who { font-family:'Barlow Condensed',sans-serif; font-size:.68rem; color:var(--gold-dim); letter-spacing:1px; display:block; margin-bottom:5px; }
+    .card-desc { font-size:.75rem; color:var(--muted); line-height:1.45; display:block; margin-bottom:8px; }
+    .card-theory { font-size:.68rem; font-style:italic; color:#7a6020; line-height:1.45; border-top:1px solid var(--border); padding-top:6px; margin-top:2px; }
+    .card-theory cite { color:#a08030; font-style:normal; font-weight:600; display:block; margin-top:4px; padding-left:8px; border-left:2px solid var(--gold-dim); }
+    .card-effects { display:flex; flex-wrap:wrap; gap:4px; margin-top:7px; }
+    .eff { font-family:'Barlow Condensed',sans-serif; font-size:.7rem; font-weight:700; padding:2px 7px; border-radius:4px; }
+    .eff.pos { background:rgba(63,168,95,.2); color:#3fa85f; }
+    .eff.neg { background:rgba(212,64,48,.2); color:#d44030; }
+    /* NEXT BTN */
+    #next-btn { width:100%; padding:15px; font-family:'Bebas Neue',sans-serif; font-size:1.45rem; letter-spacing:4px; background:linear-gradient(135deg,#8a6008,#d4a832,#8a6008); color:var(--bg); border:none; border-radius:8px; cursor:pointer; transition:all .2s; box-shadow:0 4px 20px rgba(0,0,0,.5); }
+    #next-btn:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 6px 28px rgba(212,168,50,.4); }
+    #next-btn:disabled { opacity:.38; cursor:not-allowed; transform:none; }
+    /* PROGRESS */
+    #progress-bar { height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
+    #progress-fill { height:100%; background:var(--gold); transition:width .7s ease; border-radius:2px; }
+    /* FINAL & RECAP */
+    .fin-emoji { font-size:3.8rem; margin-bottom:10px; }
+    .govt-badge { font-family:'Barlow Condensed',sans-serif; font-size:1.1rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; padding:5px 20px; border-radius:30px; display:inline-block; margin-bottom:14px; }
+    .fin-text { font-size:.9rem; color:var(--muted); line-height:1.65; margin-bottom:14px; }
+    .fin-reflection { font-size:.82rem; font-style:italic; color:#6a5220; line-height:1.6; margin-bottom:18px; padding:12px 14px; background:rgba(212,168,50,.06); border-radius:6px; border-left:3px solid var(--gold-dim); text-align:left; }
+    .fin-reflection cite { color:#a08030; font-style:normal; font-weight:700; display:block; margin-top:6px; font-size:.75rem; }
+    #final-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:18px; }
+    .fs-item { background:rgba(255,255,255,.05); border-radius:6px; padding:8px 4px; }
+    .fs-val { font-family:'Bebas Neue',sans-serif; font-size:1.7rem; color:var(--white); }
+    .fs-lbl { font-size:.6rem; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+    #fin-recap { margin-top: 20px; margin-bottom: 25px; }
+    @media(max-width:480px) { .cards-wrap { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+
+<!-- DIFFICULTY SCREEN -->
+<div id="diff-screen" class="overlay-screen">
+  <div class="overlay-card">
+    <h2>🍌 LAS BANANERAS</h2>
+    <p style="color:var(--muted);font-size:.9rem;margin-bottom:20px;line-height:1.6">
+      Simulador de Gobierno · Colombia · 5 Años<br>
+      Cada decisión tiene consecuencias reales.<br>Elige tu nivel de dificultad.
+    </p>
+    <button class="diff-btn" onclick="startGame('facil')">
+      🟢 FÁCIL
+      <span class="diff-desc">2 eventos aleatorios/año · Costos estándar · Para aprender el juego.</span>
+    </button>
+    <button class="diff-btn" onclick="startGame('normal')">
+      🟡 NORMAL
+      <span class="diff-desc">3 eventos/año · Decisiones tienen +20% de costo fiscal · Eventos condicionales activos.</span>
+    </button>
+    <button class="diff-btn" onclick="startGame('dificil')">
+      🔴 DIFÍCIL
+      <span class="diff-desc">4 eventos/año · Decisiones  +50% de costo · Eventos condicionales más severos.</span>
+    </button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div id="header">
+  <h1>🍌 Las Bananeras</h1>
+  <div class="hdr-sub">Simulador de Gobierno · Colombia · 5 Años</div>
+  <div id="year-banner">AÑO 1 DE 5</div>
+</div>
+
+<!-- GAME -->
+<div id="game">
+  <div id="progress-bar"><div id="progress-fill" style="width:0%"></div></div>
+
+  <div id="stats-grid">
+    <div class="stat-card" style="--ac:#d4a832">
+      <div class="stat-label">💰 Dinero del Estado</div>
+      <div class="stat-value" id="val-money">500</div>
+      <div class="stat-bar-bg"><div class="stat-bar-fill" id="bar-money" style="width:50%;background:#d4a832"></div></div>
+      <div class="stat-delta" id="delta-money"></div>
+    </div>
+    <div class="stat-card" style="--ac:#d44030">
+      <div class="stat-label">📉 Deuda Pública</div>
+      <div class="stat-value" id="val-debt">600</div>
+      <div class="stat-bar-bg"><div class="stat-bar-fill" id="bar-debt" style="width:50%;background:#d44030"></div></div>
+      <div class="stat-delta" id="delta-debt"></div>
+    </div>
+    <div class="stat-card" style="--ac:#e8b830">
+      <div class="stat-label">😊 Satisfacción Popular</div>
+      <div class="stat-value" id="val-satisfaction">55</div>
+      <div class="stat-bar-bg"><div class="stat-bar-fill" id="bar-satisfaction" style="width:55%;background:#e8b830"></div></div>
+      <div class="stat-delta" id="delta-satisfaction"></div>
+    </div>
+    <div class="stat-card" style="--ac:#3a7ec8">
+      <div class="stat-label">🗽 Libertad Económica</div>
+      <div class="stat-value" id="val-liberty">60</div>
+      <div class="stat-bar-bg"><div class="stat-bar-fill" id="bar-liberty" style="width:60%;background:#3a7ec8"></div></div>
+      <div class="stat-delta" id="delta-liberty"></div>
+    </div>
+    <div class="stat-card" style="--ac:#3fa85f">
+      <div class="stat-label">🏥 Bienestar Básico</div>
+      <div class="stat-value" id="val-welfare">65</div>
+      <div class="stat-bar-bg"><div class="stat-bar-fill" id="bar-welfare" style="width:65%;background:#3fa85f"></div></div>
+      <div class="stat-delta" id="delta-welfare"></div>
+    </div>
+    <div class="stat-card" style="--ac:#b07028">
+      <div class="stat-label">⚖️ Estabilidad</div>
+      <div class="stat-value" id="val-stability">60</div>
+      <div class="stat-bar-bg"><div class="stat-bar-fill" id="bar-stability" style="width:60%;background:#b07028"></div></div>
+      <div class="stat-delta" id="delta-stability"></div>
+    </div>
+  </div>
+
+  <div id="event-box"></div>
+
+  <div class="section-title"><span>🟦</span> ECONOMÍA</div>
+  <div class="decision-group" id="grp-eco">
+    <div class="decision-header" onclick="toggleGroup('eco')">
+      <span class="dh-icon">💼</span>
+      <span class="dh-title">POLÍTICA ECONÓMICA — elige 1</span>
+      <span class="dh-sel" id="sel-eco">✓ Elegida</span>
+      <span class="dh-arrow">▼</span>
+    </div>
+    <div class="cards-wrap" id="cards-eco"></div>
+  </div>
+
+  <div class="section-title"><span>🟩</span> BIENESTAR SOCIAL</div>
+  <div class="decision-group" id="grp-welfare">
+    <div class="decision-header" onclick="toggleGroup('welfare')">
+      <span class="dh-icon">🏥</span>
+      <span class="dh-title">POLÍTICA SOCIAL — elige 1</span>
+      <span class="dh-sel" id="sel-welfare">✓ Elegida</span>
+      <span class="dh-arrow">▼</span>
+    </div>
+    <div class="cards-wrap" id="cards-welfare"></div>
+  </div>
+
+  <div class="section-title"><span>🌍</span> COMERCIO, SEGURIDAD & ENERGÍA</div>
+  <div class="decision-group" id="grp-trade">
+    <div class="decision-header" onclick="toggleGroup('trade')">
+      <span class="dh-icon">🌐</span>
+      <span class="dh-title">POLÍTICA EXTERIOR, SEGURIDAD & ENERGÍA — elige 1</span>
+      <span class="dh-sel" id="sel-trade">✓ Elegida</span>
+      <span class="dh-arrow">▼</span>
+    </div>
+    <div class="cards-wrap" id="cards-trade"></div>
+  </div>
+
+  <button id="next-btn" onclick="advanceYear()" disabled>SIGUIENTE AÑO →</button>
+</div>
+
+<!-- FINAL SCREEN -->
+<div id="final-screen" class="overlay-screen" style="display:none;">
+  <div class="overlay-card">
+    <div class="fin-emoji" id="fin-emoji">🏛️</div>
+    <h2>FIN DE MANDATO</h2>
+    <div class="govt-badge" id="govt-badge">—</div>
+    <div class="fin-text" id="fin-text">—</div>
+    <div class="fin-reflection" id="fin-reflection">—</div>
+    
+    <div id="final-stats">
+      <div class="fs-item"><div class="fs-val" id="fs-money">—</div><div class="fs-lbl">Dinero</div></div>
+      <div class="fs-item"><div class="fs-val" id="fs-debt">—</div><div class="fs-lbl">Deuda</div></div>
+      <div class="fs-item"><div class="fs-val" id="fs-sat">—</div><div class="fs-lbl">Satisfacción</div></div>
+      <div class="fs-item"><div class="fs-val" id="fs-lib">—</div><div class="fs-lbl">Libertad</div></div>
+      <div class="fs-item"><div class="fs-val" id="fs-wel">—</div><div class="fs-lbl">Bienestar</div></div>
+      <div class="fs-item"><div class="fs-val" id="fs-stab">—</div><div class="fs-lbl">Estabilidad</div></div>
+    </div>
+
+    <!-- AQUÍ SE INYECTA EL RECAP -->
+    <div id="fin-recap"></div>
+
+    <button class="diff-btn" id="restart-btn" onclick="restartGame()">🔄 JUGAR DE NUEVO</button>
+  </div>
+</div>
+
+<script>
+/* =================================================================
+   LAS BANANERAS v3.1
+   - Historial de decisiones sin repeticiones.
+   - Textos completos y teóricos (Mises, Hayek, Platón, Acemoglu).
+   - Recapitulador final con el resumen de todas las políticas tomadas.
+================================================================= */
+
+let difficulty = 'normal';
+let state = {};
+let selections = {};
+let chosenHistory = { eco: [], welfare: [], trade: [] };
+let openGroups = { eco: true, welfare: false, trade: false };
+
+let lowSatisfactionYears = 0;
+let securityDecisionsTaken = 0;
+let migrationDecisionsTaken = 0;
+
+function shuffle(array) {
+  let ci = array.length, ri;
+  while (ci !== 0) { ri = Math.floor(Math.random() * ci); ci--; [array[ci], array[ri]] = [array[ri], array[ci]]; }
+  return array;
+}
+
+const DECISIONS = {
+  eco: [
+    // ── DERECHA ──
+    {
+      id: 'eR1', ideo: 'R',
+      name: 'Ajuste Fiscal: Reducir el Estado 25%',
+      who: 'Abelardo de la Espriella — 2026',
+      desc: 'Recorte de $70 billones en gasto público, eliminación de entidades duplicadas y transferencia de funciones al sector privado.',
+      theory: 'Von Mises demostró que el intervencionismo estatal no genera bienestar sino que lo destruye, porque el Estado carece del mecanismo de precios para asignar recursos eficientemente. Cada peso que el gobierno toma de la economía productiva es un peso que deja de ir a donde el consumidor habría dirigido. Acemoglu complementa esto señalando que los Estados burocráticos se convierten en instituciones extractivas. Hayek advertía que ningún planificador central puede igualar la eficiencia del mercado.<cite>"El Estado no crea riqueza; solo puede redistribuir lo que ha tomado primero a quienes lo producen." — Ludwig von Mises, Liberalismo (1927)</cite>',
+      fx: s => { s.money += 40; s.debt -= 35; s.liberty += 12; s.satisfaction -= 8; s.stability += 5; }
+    },
+    {
+      id: 'eR2', ideo: 'R',
+      name: 'Desregulación Masiva: Guillotina Normativa',
+      who: 'Abelardo de la Espriella — 2026',
+      desc: 'Por cada nueva regulación que se expida, se derogan dos existentes. Reducir la carga burocrática que ahoga a los emprendedores colombianos.',
+      theory: 'Hayek argumentó que el conocimiento necesario para regular eficientemente una economía está disperso en millones de individuos y jamás puede concentrarse en una burocracia central. Cada regulación que se añade destruye información de precios y reemplaza el saber práctico de los agentes económicos. Acemoglu documenta cómo los países con alta carga regulatoria tienden a producir élites extractivas que usan esas normas para excluir competidores.<cite>"La pretensión de que la mente de un hombre pueda abarcar y ordenar todo el conocimiento disperso es una arrogancia fatal." — F.A. Hayek, La Fatal Arrogancia (1988)</cite>',
+      fx: s => { s.liberty += 15; s.money += 10; s.stability += 8; s.welfare -= 5; s.satisfaction -= 3; }
+    },
+    {
+      id: 'eR3', ideo: 'R',
+      name: 'Capitalismo Popular: Empleados como Accionistas',
+      who: 'Abelardo de la Espriella — 2026',
+      desc: 'Incentivos tributarios para empresas que entreguen acciones o bonos de participación a sus trabajadores.',
+      theory: 'Tanto Mises como Hayek coincidían en que la propiedad privada no es solo un mecanismo económico sino la base institucional de toda libertad individual. Acemoglu documenta que las naciones con distribución amplia de la propiedad tienden a desarrollar instituciones más inclusivas. Platón señalaba en La República que una ciudad donde nadie posee nada propio es inestable; la propiedad genera compromiso cívico.<cite>"La propiedad privada de los medios de producción es la única solución al problema de la coordinación social." — Ludwig von Mises, La Acción Humana (1949)</cite>',
+      fx: s => { s.satisfaction += 8; s.liberty += 8; s.welfare += 5; s.money -= 10; s.stability += 6; }
+    },
+    {
+      id: 'eR4', ideo: 'R',
+      name: 'Privatización de Entidades Estatales No Estratégicas',
+      who: 'Abelardo de la Espriella — 2026',
+      desc: 'Venta de empresas estatales que compiten con el sector privado. Los recursos se destinan al pago de deuda pública.',
+      theory: 'Von Mises fue el primero en demostrar matemáticamente por qué el socialismo es imposible: sin precios de mercado, ninguna empresa estatal puede saber si está creando o destruyendo valor. Hayek señaló que las empresas públicas acumulan pérdidas que se ocultan mediante subsidios cruzados. Acemoglu documenta cómo la privatización bien ejecutada mejora la productividad.<cite>"El cálculo económico es imposible bajo el socialismo. Sin precios de mercado, los gerentes estatales actúan a ciegas." — Ludwig von Mises, El Socialismo (1922)</cite>',
+      fx: s => { s.money += 50; s.debt -= 40; s.liberty += 10; s.satisfaction -= 15; s.stability -= 5; }
+    },
+    {
+      id: 'eR5', ideo: 'R',
+      name: 'Eliminación del Impuesto al Patrimonio',
+      who: 'Abelardo de la Espriella — 2026',
+      desc: 'Eliminar los impuestos a la riqueza que castigan el ahorro y la inversión de los grandes capitales. "Castigar al que produce es la receta de la miseria."',
+      theory: 'Von Mises argumenta que los impuestos al capital reducen la acumulación de herramientas y maquinaria, lo cual a largo plazo estanca los salarios reales de toda la población al hacer menos productivo al trabajador. Hayek advierte que penalizar el éxito económico es desincentivar la asunción de riesgos empresariales. Acemoglu recalca que las reglas de juego deben premiar la innovación, no castigarla mediante expropiaciones impositivas.<cite>"El capital no es un fondo estático que se puede confiscar sin consecuencias; es la herramienta que aumenta la productividad y los salarios de todos." — Ludwig von Mises, La Acción Humana (1949)</cite>',
+      fx: s => { s.money -= 15; s.liberty += 10; s.satisfaction -= 5; s.stability += 5; s.debt += 5; }
+    },
+    // ── CENTRO ──
+    {
+      id: 'eC1', ideo: 'C',
+      name: 'Zonas Francas Regionales en Territorios Rezagados',
+      who: 'Paloma Valencia — 2026',
+      desc: 'Incentivos tributarios temporales en regiones con alto desempleo y baja inversión como el Pacífico, Arauca y el Catatumbo.',
+      theory: 'Acemoglu y Robinson documentan que las instituciones extractivas regionales son una de las principales causas del subdesarrollo en países con geografías dispersas como Colombia. Las zonas económicas especiales crean precedentes institucionales de inclusión. Hayek observaría que estos incentivos funcionan mejor cuando se limitan en el tiempo y permiten que el mercado descubra espontáneamente las ventajas comparativas.<cite>"Las naciones no fracasan por carecer de recursos naturales sino porque sus instituciones no crean los incentivos correctos para que sus ciudadanos innoven." — Acemoglu & Robinson, Por Qué Fracasan los Países (2012)</cite>',
+      fx: s => { s.money += 25; s.liberty += 8; s.stability += 8; s.debt += 10; s.satisfaction += 3; }
+    },
+    {
+      id: 'eC2', ideo: 'C',
+      name: 'Subsidio al Empleo Joven: El Estado Paga el 30%',
+      who: 'Paloma Valencia — 2026',
+      desc: 'Durante 12 meses, el Estado subsidia el 30% del salario mínimo a empresas que contraten jóvenes sin experiencia.',
+      theory: 'Mises criticaría cualquier intervención en el mercado laboral, pero reconocería que este subsidio es superior al control de salarios porque preserva el mecanismo de precios. Hayek señalaría que el desempleo juvenil es una señal de precio distorsionada por legislación laboral excesiva. Acemoglu documenta que la falta de primera experiencia laboral es una trampa de pobreza.<cite>"El desempleo masivo no es una falla del mercado sino la consecuencia inevitable de legislación que impide el equilibrio de salarios." — F.A. Hayek, Los Fundamentos de la Libertad (1960)</cite>',
+      fx: s => { s.satisfaction += 10; s.welfare += 6; s.money -= 25; s.liberty += 3; s.stability += 5; }
+    },
+    {
+      id: 'eC3', ideo: 'C',
+      name: 'Reforma Tributaria para Pymes: Simplificación',
+      who: 'Paloma Valencia — 2026',
+      desc: 'Reducción de la carga tributaria a pequeñas y medianas empresas, simplificación del proceso de declaración.',
+      theory: 'Von Mises demostró que la complejidad tributaria es en sí misma una forma de intervención, porque aumenta los costos de transacción y favorece a quienes pueden pagar lobbyistas. Hayek advertía que un sistema incomprensible es una forma de poder arbitrario. Acemoglu documenta que la informalidad es una respuesta racional a un Estado que cobra mucho y devuelve poco.<cite>"Una economía de mercado requiere que los impuestos sean predecibles, iguales para todos y comprensibles para el ciudadano ordinario." — F.A. Hayek, La Constitución de la Libertad (1960)</cite>',
+      fx: s => { s.money -= 10; s.debt -= 5; s.liberty += 10; s.satisfaction += 6; s.stability += 8; }
+    },
+    {
+      id: 'eC4', ideo: 'C',
+      name: 'Obras por Impuestos: Empresas Construyen País',
+      who: 'Paloma Valencia — 2026',
+      desc: 'Las empresas pueden pagar hasta el 50% de sus impuestos construyendo infraestructura en municipios alejados.',
+      theory: 'Hayek habría visto en este mecanismo una forma de descentralizar el conocimiento: las empresas saben mejor que el ministerio qué infraestructura hace falta. Acemoglu documenta que la corrupción en contratación pública es una institución extractiva fundamental en América Latina; eliminar intermediarios reduce ese riesgo. Mises señalaría que acercar el gasto al conocimiento local es superior a la centralización.<cite>"El problema central de la economía no es la optimización sino la utilización del conocimiento que no está dado a nadie en su totalidad." — F.A. Hayek, El Uso del Conocimiento en la Sociedad (1945)</cite>',
+      fx: s => { s.welfare += 8; s.stability += 10; s.money -= 15; s.satisfaction += 5; }
+    },
+    {
+      id: 'eC5', ideo: 'C',
+      name: 'Distritos de Riego y Vías Terciarias',
+      who: 'Paloma Valencia — 2026',
+      desc: 'Inversión masiva estatal en bienes públicos rurales (vías, acueductos) para hacer realmente competitivo al agro colombiano sin regalar tierras.',
+      theory: 'Acemoglu señala que sin infraestructura básica proveída por el Estado, los mercados agrícolas locales quedan monopolizados por élites intermediarias extractivas que controlan el transporte. Hayek reconocería que los bienes públicos como las vías de comunicación son un rol legítimo del Estado, pues facilitan el orden espontáneo del intercambio comercial.<cite>"Las instituciones inclusivas requieren un Estado centralizado capaz de proveer bienes públicos básicos que nivelen el campo de juego económico." — Acemoglu & Robinson, Por Qué Fracasan los Países (2012)</cite>',
+      fx: s => { s.money -= 20; s.welfare += 8; s.satisfaction += 5; s.stability += 5; s.debt += 10; }
+    },
+    // ── IZQUIERDA ──
+    {
+      id: 'eL1', ideo: 'L',
+      name: 'Reforma Tributaria Progresiva: Gravar Fortunas',
+      who: 'Iván Cepeda — 2026',
+      desc: 'Ampliar la base imponible gravando patrimonios superiores a $5.000 millones y dividendos de grandes empresas.',
+      theory: 'Acemoglu y Robinson advierten que la concentración extrema del ingreso crea élites extractivas que capturan el Estado. Sin embargo, Von Mises demostró que los impuestos al capital reducen la inversión futura y los salarios de largo plazo. Hayek añadía que la redistribución forzada implica que alguien decide por otros cuál es el uso "correcto" de los recursos, esencia del totalitarismo.<cite>"El camino hacia la servidumbre está pavimentado de buenas intenciones. Cada paso hacia la planificación económica es un paso hacia el control." — F.A. Hayek, Camino de Servidumbre (1944)</cite>',
+      fx: s => { s.money += 30; s.satisfaction += 8; s.welfare += 5; s.liberty -= 12; s.stability -= 5; }
+    },
+    {
+      id: 'eL2', ideo: 'L',
+      name: 'Renta Básica Universal para Familias Vulnerables',
+      who: 'Iván Cepeda — 2026',
+      desc: 'Transferencia mensual directa a todas las familias que viven en pobreza extrema, sin condicionalidades.',
+      theory: 'Von Mises advertía que los programas de ingreso garantizado destruyen los incentivos al trabajo. Hayek reconocía la necesidad de un ingreso mínimo modesto como red de seguridad. Acemoglu documenta que las transferencias no condicionadas tienden a crear clientelismo político. Platón advertía que comprar popularidad con dinero público termina en tiranía.<cite>"La demagocracia degenera inevitablemente cuando el pueblo descubre que puede votarse a sí mismo dádivas del tesoro público." — Platón, La República (s. IV a.C.)</cite>',
+      fx: s => { s.satisfaction += 15; s.welfare += 12; s.money -= 45; s.debt += 30; s.liberty -= 5; }
+    },
+    {
+      id: 'eL3', ideo: 'L',
+      name: 'Banco del Pueblo: Crédito Estatal',
+      who: 'Iván Cepeda — 2026',
+      desc: 'Creación de un banco público que otorgue microcréditos a tasas subsidiadas para los sectores excluidos.',
+      theory: 'Mises fue el primero en demostrar que la expansión artificial del crédito genera ciclos de auge y crisis. Los bancos que prestan por debajo del mercado financian proyectos no rentables. Acemoglu documenta que la banca de desarrollo estatal ha sido históricamente capturada por élites políticas, aunque reconoce que el crédito es vital para comunidades excluidas.<cite>"El crédito expansivo no crea riqueza real; solo redistribuye capital existente hacia usos menos productivos." — Ludwig von Mises, Teoría del Dinero (1912)</cite>',
+      fx: s => { s.money -= 20; s.debt += 20; s.satisfaction += 10; s.liberty -= 10; s.welfare += 8; }
+    },
+    {
+      id: 'eL4', ideo: 'L',
+      name: 'Austeridad Republicana: Recortar Sueldos',
+      who: 'Iván Cepeda — 2026',
+      desc: 'Reducción de salarios de congresistas y altos funcionarios, eliminación de lujos del Estado.',
+      theory: 'Platón advertía en La República que el guardián de la ciudad debe ser el más austero de todos sus ciudadanos: si los gobernantes viven con lujo, la legitimidad colapsa. Acemoglu coincide en que la opulencia erosiona la confianza institucional. Hayek añadiría que es señal de que el Estado ha crecido más allá de sus funciones legítimas.<cite>"Los guardianes de la ciudad no deben poseer propiedad que no sea absolutamente necesaria. Su recompensa debe ser el honor, no el oro." — Platón, La República (s. IV a.C.)</cite>',
+      fx: s => { s.money += 15; s.satisfaction += 12; s.stability += 3; s.liberty -= 5; }
+    },
+    {
+      id: 'eL5', ideo: 'L',
+      name: 'Reforma Agraria: Compra Estatal de Tierras',
+      who: 'Iván Cepeda — 2026',
+      desc: 'Compra de 3 millones de hectáreas a grandes ganaderos para ser tituladas y entregadas a campesinos sin tierra.',
+      theory: 'Acemoglu documenta que la extrema concentración de la tierra en América Latina fue la institución extractiva original que perpetuó la desigualdad política. Sin embargo, Von Mises advertiría que redistribuir tierras no garantiza la productividad si el campesino carece de capital (maquinaria y semillas). Platón observó que el conflicto por la tierra es el origen de las mayores guerras civiles.<cite>"La concentración extrema del poder económico lleva inevitablemente a la concentración del poder político y a la exclusión." — Acemoglu & Robinson, Por Qué Fracasan los Países (2012)</cite>',
+      fx: s => { s.money -= 35; s.welfare += 10; s.satisfaction += 10; s.liberty -= 10; s.stability -= 5; s.debt += 20; }
+    },
+    // ── HISTÓRICO ──
+    {
+      id: 'eH1', ideo: 'H',
+      name: 'Apertura Económica: Gaviria Rompe el Proteccionismo',
+      who: 'César Gaviria — 1990–1994',
+      desc: 'Reducción masiva de aranceles e integración a los mercados globales.',
+      theory: 'La apertura comercial fue la aplicación más radical del pensamiento de Mises y Hayek en Colombia: permitir que el mercado mundial decida qué produce el país. A corto plazo generó desempleo; a largo, forzó modernización. Acemoglu señala que expone al país a estándares internacionales de competencia y transparencia.<cite>"La prosperidad de los vecinos es una ventaja, no una amenaza. El libre comercio beneficia a todos los participantes." — Ludwig von Mises, Nación, Estado y Economía (1919)</cite>',
+      fx: s => { s.liberty += 20; s.money += 15; s.welfare -= 10; s.satisfaction -= 5; s.stability += 5; }
+    },
+    {
+      id: 'eH2', ideo: 'H',
+      name: 'Confianza Inversionista Uribe: IED al Máximo',
+      who: 'Álvaro Uribe — 2002–2010',
+      desc: 'Garantías jurídicas sólidas para el capital extranjero y zonas francas permanentes.',
+      theory: 'Acemoglu documenta que la seguridad jurídica es el prerrequisito más importante de la inversión productiva. Mises argumentaba que el capital va donde las reglas son predecibles. Hayek añadía que el Estado de Derecho —igualdad ante la ley— es la condición de toda libertad económica real.<cite>"El Estado de Derecho es la condición de toda libertad. Sin normas previsibles e iguales para todos, no hay libertad económica posible." — F.A. Hayek, Camino de Servidumbre (1944)</cite>',
+      fx: s => { s.money += 30; s.liberty += 10; s.stability += 10; s.satisfaction += 5; s.debt += 10; }
+    },
+    {
+      id: 'eH3', ideo: 'H',
+      name: 'Economía Naranja de Duque: Industrias Creativas',
+      who: 'Iván Duque — 2018–2022',
+      desc: 'Exención de renta por 7 años para empresas de tecnología, arte y diseño.',
+      theory: 'Hayek argumentaría que las industrias creativas son las más difíciles de planificar porque dependen del conocimiento disperso y la experimentación libre. El incentivo tributario reduce el costo de experimentación. Acemoglu nota que diversificarse crea clases medias educadas que demandan rendición de cuentas.<cite>"El conocimiento que importa no es el de fórmulas científicas sino el del tiempo y lugar particular, el del hombre en el mercado." — F.A. Hayek, El Uso del Conocimiento (1945)</cite>',
+      fx: s => { s.money -= 10; s.liberty += 8; s.satisfaction += 3; s.welfare += 2; s.stability += 2; }
+    },
+    {
+      id: 'eH4', ideo: 'H',
+      name: 'Reforma Tributaria CREE de Santos: Formalizar Empleo',
+      who: 'Juan Manuel Santos — 2012',
+      desc: 'Sustitución de impuestos sobre la nómina para reducir el costo de contratar trabajadores formales.',
+      theory: 'Mises habría apoyado esta reforma porque reduce el "impuesto al empleo". Hayek señalaría que la legislación laboral sobreprotectora daña más a quienes protege porque excluye a los vulnerables de la formalidad. Acemoglu documenta que la informalidad es una institución extractiva.<cite>"Quien grava el trabajo produce desempleo tan ciertamente como quien grava el pan produce hambre." — Ludwig von Mises, La Acción Humana (1949)</cite>',
+      fx: s => { s.money += 10; s.welfare += 5; s.satisfaction += 5; s.liberty -= 5; s.stability += 5; }
+    },
+    {
+      id: 'eH5', ideo: 'H',
+      name: 'Creación del Banco de la República (1923)',
+      who: 'Pedro Nel Ospina — 1923',
+      desc: 'Fundación del banco central independiente tras la Misión Kemmerer, acabando con la emisión descontrolada de dinero por parte de bancos privados y del gobierno.',
+      theory: 'Tanto Hayek como Mises reconocen que la inflación destruye el cálculo económico y es el impuesto más regresivo. Institucionalizar la independencia monetaria fue un paso clave hacia el Estado de Derecho en Colombia. Acemoglu vería esto como una institución macroeconómica inclusiva crítica.<cite>"El dinero sólido ha sido ideado como un instrumento para la protección de las libertades civiles contra las incursiones despóticas de los gobiernos." — Ludwig von Mises, La Teoría del Dinero y del Crédito (1912)</cite>',
+      fx: s => { s.stability += 15; s.money += 10; s.liberty += 5; s.satisfaction += 2; }
+    },
+  ],
+
+  welfare: [
+    // ── DERECHA ──
+    {
+      id: 'wR1', ideo: 'R',
+      name: 'Vouchers Educativos: La Familia Elige el Colegio',
+      who: 'Abelardo de la Espriella — 2026',
+      desc: 'Bono mensual directo a la familia para pagar la institución educativa de su elección.',
+      theory: 'Von Mises demostró que el monopolio educativo estatal elimina la retroalimentación del mercado: un mal colegio público no cierra. Hayek añade que los padres tienen conocimiento local que ningún ministerio posee. Acemoglu documenta que sistemas exitosos comparten autonomía escolar y rendición de cuentas.<cite>"Hay miles de formas de satisfacer necesidades. Si reemplazamos todas por un plan único, destruimos la adaptabilidad." — F.A. Hayek, La Fatal Arrogancia (1988)</cite>',
+      fx: s => { s.welfare += 8; s.liberty += 12; s.satisfaction += 5; s.money -= 20; s.stability += 3; }
+    },
+    {
+      id: 'wR2', ideo: 'R',
+      name: 'Salud a Domicilio + Pago de Deuda a EPS',
+      who: 'Paloma Valencia — 2026',
+      desc: 'Pagar deudas atrasadas a clínicas y desplegar brigadas de salud domiciliaria.',
+      theory: 'Mises identificaría la deuda del Estado como el resultado típico del intervencionismo: prometer más de lo que puede pagar. Hayek diría que el mercado solo funciona si se cumplen contratos; un Estado deudor destruye la confianza. Acemoglu destaca sistemas mixtos de salud eficaces.<cite>"El socialismo no solo es ineficiente; reemplaza la responsabilidad individual por irresponsabilidad colectiva." — Ludwig von Mises, El Socialismo (1922)</cite>',
+      fx: s => { s.welfare += 12; s.satisfaction += 10; s.money -= 30; s.stability += 8; s.liberty += 3; }
+    },
+    {
+      id: 'wR3', ideo: 'R',
+      name: 'Red Veterinaria Gratuita 24h para Familias Vulnerables',
+      who: 'Abelardo de la Espriella — 2026',
+      desc: 'Red nacional de atención veterinaria gratuita para mascotas de hogares en pobreza.',
+      theory: 'Acemoglu señala que la legitimidad estatal se construye con instituciones que demuestran empatía. Platón argumentaba que el buen gobernante conoce los pequeños deseos de su pueblo; la sabiduría incluye gestos de lealtad. Hayek reconocería bienes públicos de bajo costo emocionalmente justificables.<cite>"El buen gobernante es aquel que conoce el alma de su ciudad: sus esperanzas y sus amores cotidianos." — Platón, La República (s. IV a.C.)</cite>',
+      fx: s => { s.satisfaction += 10; s.welfare += 3; s.money -= 8; s.liberty += 2; s.stability += 4; }
+    },
+    {
+      id: 'wR4', ideo: 'R',
+      name: 'Pensiones Individuales: Fortalecer el Ahorro Privado',
+      who: 'Paloma Valencia — 2026',
+      desc: 'Fortalecer los fondos privados de pensiones con incentivos tributarios al ahorro individual.',
+      theory: 'Von Mises demostró que el sistema de reparto estatal es insostenible demográficamente. El ahorro individual crea capital real. Hayek añadiría que el sistema de reparto es endeudamiento intergeneracional no consensuado. Acemoglu documenta la correlación entre pensiones privadas y mercados de capitales fuertes.<cite>"Cargar a las futuras generaciones con deudas impagables es la más injusta forma de tiranía." — F.A. Hayek, Los Fundamentos de la Libertad (1960)</cite>',
+      fx: s => { s.money += 25; s.debt -= 30; s.satisfaction -= 15; s.liberty += 15; s.stability -= 5; }
+    },
+    {
+      id: 'wR5', ideo: 'R',
+      name: 'Cárceles Concesionadas y Trabajo Penitenciario',
+      who: 'Abelardo de la Espriella — 2026',
+      desc: 'Concesionar la administración de centros penitenciarios a privados y obligar a los reclusos a trabajar para costear su estadía.',
+      theory: 'Desde un enfoque de libre mercado estricto propuesto por pensadores libertarios, los costos de la justicia no deberían recaer en el contribuyente inocente. Platón coincidiría en que la restauración de la justicia exige un peso para quien la rompe. Hayek apuntaría a la eficiencia de la gestión privada frente al hacinamiento estatal.<cite>"Aquel que comete la injusticia debe purgarla; hacer que la ciudad justa pague por los crímenes del injusto es doblar el agravio." — Platón, La República (s. IV a.C.)</cite>',
+      fx: s => { s.money += 10; s.stability += 12; s.satisfaction += 5; s.liberty -= 5; }
+    },
+    // ── CENTRO ──
+    {
+      id: 'wC1', ideo: 'C',
+      name: 'Ruta 3E: Estudiar, Emplearse o Emprender',
+      who: 'Paloma Valencia — 2026',
+      desc: 'Bonos educativos y bilingüismo desde preescolar, formación en IA.',
+      theory: 'Acemoglu documenta que el capital humano es el motor fundamental de las instituciones inclusivas. Hayek señalaba que la educación es un campo donde la intervención estatal se justifica por los beneficios sociales incalculables. Mises añadiría que la formación maximiza el valor social si fomenta emprendimiento.<cite>"La diferencia entre países ricos y pobres está en si sus instituciones educativas producen ciudadanos capaces de innovar." — Acemoglu & Robinson, Por Qué Fracasan los Países (2012)</cite>',
+      fx: s => { s.welfare += 12; s.satisfaction += 8; s.liberty += 5; s.money -= 28; s.debt += 15; s.stability += 6; }
+    },
+    {
+      id: 'wC2', ideo: 'C',
+      name: '250.000 Subsidios de Vivienda + Titulación',
+      who: 'Paloma Valencia — 2026',
+      desc: 'Subsidios focalizados combinados con titulación masiva de predios informales.',
+      theory: 'Acemoglu cita a Hernando de Soto para documentar que la propiedad informal es "capital muerto". Titularla lo convierte en capital vivo. Von Mises diría que este es un paso vital del Estado para fijar derechos de propiedad. Hayek concuerda en que estos derechos son la base del orden espontáneo.<cite>"Los pobres no carecen de activos, carecen de la capacidad legal para usarlos como capital." — Hernando de Soto, referenciado por Acemoglu (2012)</cite>',
+      fx: s => { s.welfare += 10; s.satisfaction += 9; s.stability += 7; s.money -= 22; s.debt += 18; }
+    },
+    {
+      id: 'wC3', ideo: 'C',
+      name: '50 Hospitales Regionales con Gestión por Resultados',
+      who: 'Paloma Valencia — 2026',
+      desc: 'Inversión focalizada y selección de directores por méritos con métricas estrictas.',
+      theory: 'Mises y Hayek reconocerían que la salud pública enfrenta el problema del cálculo: se requieren métricas de desempeño para simular disciplina de mercado. Acemoglu documenta que los sistemas mixtos requieren rendición de cuentas rigurosa. Platón diría que el médico de la ciudad debe ser el mejor, no el más político.<cite>"El secreto del éxito no es la política correcta sino las instituciones correctas que obliguen a rendir cuentas." — Acemoglu & Robinson, Por Qué Fracasan los Países (2012)</cite>',
+      fx: s => { s.welfare += 15; s.satisfaction += 10; s.money -= 35; s.stability += 10; s.liberty += 2; }
+    },
+    {
+      id: 'wC4', ideo: 'C',
+      name: 'Atención Integral a la Primera Infancia',
+      who: 'Paloma Valencia — 2026',
+      desc: 'Nutrición garantizada, estimulación temprana y cuidado para niños de 0 a 5 años.',
+      theory: 'Acemoglu documenta que la trampa de pobreza opera en los primeros 5 años: la desnutrición daña el capital humano irreversiblemente. Hayek reconocería que intervenir aquí justifica el gasto debido a las externalidades positivas. Mises diría que asegurar la productividad futura es la mejor inversión.<cite>"La desigualdad no comienza con el capital; comienza en la infancia, cuando el destino se sella antes de poder elegir." — Análisis Institucional del Capital Humano</cite>',
+      fx: s => { s.welfare += 18; s.satisfaction += 8; s.money -= 25; s.stability += 5; }
+    },
+    {
+      id: 'wC5', ideo: 'C',
+      name: 'Mi Casa Ya: Expansión de Subsidio a la Tasa',
+      who: 'Paloma Valencia — 2026',
+      desc: 'Potenciar el acceso a crédito hipotecario para familias de clase media-baja subsidiando la tasa de interés bancaria.',
+      theory: 'Facilita la formación de capital sin estatizar la banca, alineándose con las teorías de democratización de la propiedad. Hayek vería esto como una distorsión leve de las tasas, pero Acemoglu lo valoraría como una herramienta vital para integrar a sectores marginados al sistema financiero formal.<cite>"Una sociedad de pequeños propietarios es la mejor defensa democrática contra la tiranía estatal." — F.A. Hayek, adaptando a Tocqueville</cite>',
+      fx: s => { s.welfare += 10; s.satisfaction += 12; s.money -= 18; s.stability += 5; }
+    },
+    // ── IZQUIERDA ──
+    {
+      id: 'wL1', ideo: 'L',
+      name: 'Universidad Pública Gratuita Universal',
+      who: 'Iván Cepeda — 2026',
+      desc: 'Gratuidad total en educación superior pública, más subsidio de sostenimiento.',
+      theory: 'Acemoglu reconoce que la educación superior es motor de movilidad. Sin embargo, Von Mises advertía que la gratuidad total elimina incentivos de eficiencia. Hayek señalaría que las universidades estatales sin competencia tienden a la mediocridad. Platón apoyaría educar a los guardianes, pero bajo meritocracia estricta.<cite>"Educar a todos sin distinguir al apto del inepto no es democracia, es la destrucción del conocimiento." — Platón, La República (s. IV a.C.)</cite>',
+      fx: s => { s.welfare += 18; s.satisfaction += 14; s.money -= 45; s.debt += 35; s.liberty -= 5; s.stability -= 3; }
+    },
+    {
+      id: 'wL2', ideo: 'L',
+      name: 'Colombia Mayor Ampliado: Auxilio Vitalicio',
+      who: 'Iván Cepeda — 2026',
+      desc: 'Subsidio mensual digno para 5 millones de adultos mayores sin pensión.',
+      theory: 'Acemoglu reconoce que la falta de protección a la vejez es una falla del sistema pensional excluyente. Von Mises advertía que el ingreso garantizado reduce el ahorro. Hayek reconocía la necesidad de red de seguridad para los incapacitados, sin sustituir al mercado.<cite>"Existe la obligación de garantizar un ingreso mínimo bajo el cual nadie deba caer, siempre que no destruya incentivos." — F.A. Hayek, Camino de Servidumbre (1944)</cite>',
+      fx: s => { s.satisfaction += 16; s.welfare += 14; s.money -= 50; s.debt += 40; s.liberty -= 8; s.stability -= 4; }
+    },
+    {
+      id: 'wL3', ideo: 'L',
+      name: 'Reforma a la Salud: Hacia un Sistema Universal',
+      who: 'Iván Cepeda — 2026',
+      desc: 'Eliminar progresivamente la intermediación financiera de las EPS privadas.',
+      theory: 'Von Mises advertía que eliminar intermediadores privados sin un mecanismo alternativo de asignación produce escasez y filas. Acemoglu señalaría que la eliminación de las EPS requiere instituciones fuertes para no replicar el caos del Seguro Social. Hayek diría que el problema es falta de competencia, no la existencia de privados.<cite>"Donde el precio no refleja el costo real, la demanda supera la oferta y el sistema colapsa en filas y escasez." — Ludwig von Mises, La Acción Humana (1949)</cite>',
+      fx: s => { s.welfare += 20; s.satisfaction += 15; s.money -= 55; s.debt += 45; s.liberty -= 10; s.stability -= 6; }
+    },
+    {
+      id: 'wL4', ideo: 'L',
+      name: 'Subsidio a Madres y Sistema de Cuidado',
+      who: 'Iván Cepeda — 2026',
+      desc: 'Medio salario mínimo garantizado a madres solteras y reconocimiento del trabajo doméstico.',
+      theory: 'Acemoglu documenta que la exclusión de la mujer es una institución extractiva. Von Mises reconocería el valor económico del trabajo doméstico, pero advertiría que subsidios focalizados distorsionan incentivos demográficos. Hayek abogaría por instituciones que integren a la mujer al mercado laboral formal.<cite>"Desperdiciar el talento de la mitad de la población por falta de instituciones inclusivas es elegir ser pobres." — Acemoglu & Robinson, Por Qué Fracasan los Países (2012)</cite>',
+      fx: s => { s.welfare += 12; s.satisfaction += 12; s.money -= 35; s.debt += 20; s.liberty -= 3; }
+    },
+    {
+      id: 'wL5', ideo: 'L',
+      name: 'Mínimo Vital de Agua y Energía',
+      who: 'Iván Cepeda — 2026',
+      desc: 'Garantizar el consumo básico de servicios públicos (agua y luz) de forma 100% gratuita para los estratos 1 y 2.',
+      theory: 'Mientras la izquierda lo defiende como un derecho humano inalienable, Hayek sorprendentemente admitía que un mínimo existencial no rompe fatalmente el mercado si se aplica correctamente, aunque Mises argumentaría que los precios nulos fomentan el desperdicio ecológico de los recursos escasos.<cite>"Garantizar a todos un mínimo existencial en forma de alimentación, refugio y salud no es incompatible con el libre mercado." — F.A. Hayek, Camino de Servidumbre (1944)</cite>',
+      fx: s => { s.welfare += 12; s.satisfaction += 15; s.money -= 25; s.debt += 15; }
+    },
+    // ── HISTÓRICO ──
+    {
+      id: 'wH1', ideo: 'H',
+      name: 'Familias en Acción: Subsidio Condicionado',
+      who: 'Álvaro Uribe — 2002',
+      desc: 'Transferencia condicionada a asistencia escolar y controles de salud infantil.',
+      theory: 'Acemoglu considera este el tipo de política eficaz y compatible con instituciones inclusivas: verificable e impacta en capital humano. Von Mises habría valorado la condicionalidad. Hayek señalaría que este subsidio crea capacidad en lugar de dependencia pura.<cite>"Las transferencias condicionadas no reemplazan el mercado, invierten en la capacidad para participar en él." — Análisis sobre Instituciones y Pobreza</cite>',
+      fx: s => { s.welfare += 10; s.satisfaction += 10; s.money -= 15; s.stability += 5; }
+    },
+    {
+      id: 'wH2', ideo: 'H',
+      name: 'Ser Pilo Paga: Meritocracia con Becas Privadas',
+      who: 'Juan Manuel Santos — 2014–2018',
+      desc: 'Becas completas en las mejores universidades para estudiantes excelentes de escasos recursos.',
+      theory: 'Platón habría aplaudido la meritocracia pura: cada ciudadano ocupa el lugar que merece por su capacidad. Von Mises señalaría que el verdadero igualador social es el mérito. Acemoglu documenta que sin buena educación básica, los resultados ICFES premian colegios, no solo talento.<cite>"La ciudad justa es aquella donde nadie usurpa el lugar que la naturaleza y su esfuerzo no le han dado." — Platón, La República (s. IV a.C.)</cite>',
+      fx: s => { s.welfare += 8; s.satisfaction += 12; s.money -= 20; s.liberty += 5; }
+    },
+    {
+      id: 'wH3', ideo: 'H',
+      name: 'Ingreso Solidario de Duque: Giro Directo',
+      who: 'Iván Duque — 2020 (pandemia)',
+      desc: 'Transferencia directa de emergencia a familias vulnerables durante la pandemia.',
+      theory: 'Von Mises reconocería que en una emergencia aguda el mercado no puede absorber el shock a tiempo. Acemoglu señala el efecto positivo de digitalizar a los informales. Hayek diría que el peligro es que un auxilio temporal genere expectativas de permanencia clientelista.<cite>"El mayor riesgo de la ayuda de emergencia es que lo temporal siempre tiende a volverse permanente en democracia." — F.A. Hayek, Camino de Servidumbre (1944)</cite>',
+      fx: s => { s.satisfaction += 15; s.welfare += 8; s.money -= 35; s.debt += 25; s.stability += 3; }
+    },
+    {
+      id: 'wH4', ideo: 'H',
+      name: 'Jóvenes en Paz de Petro: Pagos contra la Violencia',
+      who: 'Gustavo Petro — 2023–2024',
+      desc: 'Transferencia mensual a jóvenes en riesgo de reclutamiento por grupos armados.',
+      theory: 'Von Mises advertiría que pagar para que alguien no haga algo malo crea un incentivo perverso. Hayek diría que si el subsidio premia la amenaza, el problema se multiplica. Platón afirmaría que la justicia no se compra, se instaura.<cite>"No puede haber justicia donde algunos evitan el mal solo porque les pagan; la virtud debe ser su propia recompensa." — Platón, La República (s. IV a.C.)</cite>',
+      fx: s => { s.satisfaction -= 5; s.welfare += 5; s.money -= 25; s.stability -= 5; s.liberty -= 3; }
+    },
+    {
+      id: 'wH5', ideo: 'H',
+      name: 'Creación del SENA (1957)',
+      who: 'Junta Militar — 1957',
+      desc: 'Creación del Servicio Nacional de Aprendizaje para capacitar gratuitamente a la clase trabajadora, financiado con aportes empresariales.',
+      theory: 'Una política fundamental que Acemoglu destacaría como creadora de capital humano incluyente, aumentando la productividad laboral histórica de Colombia. Mises vería la capacitación técnica ligada a las empresas como el mecanismo perfecto de formación de riqueza.<cite>"El capital humano es la diferencia fundamental entre la prosperidad institucionalizada y la trampa de la pobreza endémica." — Acemoglu & Robinson, Por Qué Fracasan los Países (2012)</cite>',
+      fx: s => { s.welfare += 15; s.stability += 10; s.money -= 5; s.satisfaction += 10; }
+    },
+  ],
+
+  trade: [
+    // ── DERECHA ──
+    {
+      id: 'tR1', ideo: 'R',
+      name: 'Fracking y Exploración Minero-Energética',
+      who: 'Abelardo de la Espriella — 2026',
+      desc: 'Habilitar el fracking en Colombia y reabrir bloques de exploración petrolera.',
+      theory: 'Von Mises argumentaría que prohibir el aprovechamiento de recursos por ideología es empobrecimiento voluntario. Hayek señalaría que la ecología se regula mejor mediante derechos de propiedad. Acemoglu advierte que prohibir el desarrollo lleva a la pobreza nacional.<cite>"Si un recurso es escaso y útil, el mercado hallará la manera eficiente de extraerlo. Las prohibiciones solo transfieren la demanda a regímenes peores." — Ludwig von Mises, La Acción Humana (1949)</cite>',
+      fx: s => { s.money += 40; s.debt -= 20; s.liberty += 5; s.satisfaction -= 5; s.stability += 5; s.welfare -= 3; },
+      tags: ['security']
+    },
+    {
+      id: 'tR2', ideo: 'R',
+      name: 'Mano Dura: Fumigación y Extradición',
+      who: 'Abelardo de la Espriella — 2026',
+      desc: 'Fumigación aérea con glifosato y fin absoluto a cualquier negociación con terroristas.',
+      theory: 'Acemoglu y Robinson son contundentes: el monopolio legítimo de la fuerza es la condición de toda institución inclusiva. Von Mises señalaría que sin Estado de Derecho, la violencia se vuelve el peor impuesto. Platón diría que una ciudad incapaz de defenderse de sus enemigos no es una ciudad.<cite>"El Estado que no puede garantizar la vida y propiedad en todo su territorio es una ficción que encubre el dominio del fuerte." — Acemoglu & Robinson, Por Qué Fracasan los Países (2012)</cite>',
+      fx: s => { s.stability += 15; s.money -= 20; s.satisfaction -= 8; s.liberty += 5; s.welfare -= 5; },
+      tags: ['security', 'anti_migration']
+    },
+    {
+      id: 'tR3', ideo: 'R',
+      name: 'TLC Ampliado con EE.UU. + Adhesión OCDE',
+      who: 'Abelardo de la Espriella — 2026',
+      desc: 'Profundizar el TLC y acelerar los estándares exigidos por la OCDE.',
+      theory: 'Acemoglu documenta el efecto de "importación institucional": amarrarse a organizaciones fuertes obliga a hacer reformas incómodas. Von Mises aplaudiría la apertura como vía de paz. Hayek vería en la OCDE un freno a los impulsos políticos locales caprichosos.<cite>"La única paz duradera entre naciones es el libre comercio. Quienes comercian no tienen razón para guerrear." — Ludwig von Mises, Nación, Estado y Economía (1919)</cite>',
+      fx: s => { s.money += 20; s.liberty += 10; s.stability += 12; s.satisfaction += 3; s.debt += 5; }
+    },
+    {
+      id: 'tR4', ideo: 'R',
+      name: 'Control Migratorio Estricto',
+      who: 'Abelardo de la Espriella — 2026',
+      desc: 'Militarizar fronteras, cupos anuales y deportaciones de indocumentados.',
+      theory: 'Hayek diría que la migración masiva no regulada puede destruir el "capital social" y la confianza institucional. Acemoglu documenta que migraciones bruscas provocan choques políticos que debilitan las democracias. Platón afirmaba que asimilar ciudadanos foráneos descontroladamente quiebra las leyes.<cite>"Una nación tolera migración mientras sus instituciones puedan absorberla. Más allá, se vuelve una amenaza al orden cívico." — F.A. Hayek, Los Fundamentos de la Libertad (1960)</cite>',
+      fx: s => { s.stability += 10; s.satisfaction += 5; s.money -= 15; s.liberty -= 5; s.welfare -= 5; },
+      tags: ['anti_migration']
+    },
+    {
+      id: 'tR5', ideo: 'R',
+      name: 'Porte Legal de Armas para Civiles',
+      who: 'Abelardo de la Espriella — 2026',
+      desc: 'Desregular el mercado y porte de armas para que los ciudadanos sin antecedentes puedan defender su vida y propiedad ante la ineficiencia estatal.',
+      theory: 'Los pensadores clásicos argumentan que desarmar al ciudadano pacífico garantiza el monopolio de la violencia a los criminales. Platón, aunque creía en los guardianes, entendía la autodefensa. Hayek argumentaría que confiar ciegamente el 100% de la seguridad a un Estado ineficiente es una ingenuidad letal.<cite>"Desarmar a los ciudadanos de bien es siempre el primer y más seguro acto de consolidación del tirano." — Platón, adaptado sobre la milicia cívica</cite>',
+      fx: s => { s.liberty += 15; s.stability -= 10; s.satisfaction += 5; s.welfare -= 5; },
+      tags: ['security']
+    },
+    // ── CENTRO ──
+    {
+      id: 'tC1', ideo: 'C',
+      name: 'Transición Energética Gradual (Gas + Renovables)',
+      who: 'Paloma Valencia — 2026',
+      desc: 'Mantener el gas natural como puente mientras se construye infraestructura solar/eólica.',
+      theory: 'Hayek argumentaría que una transición forzada destruye capital acumulado sin garantizar el sustituto. La gradualidad permite al mercado descubrir espontáneamente cuándo las alternativas son viables. Von Mises diría que forzar sustitutos caros destruye riqueza.<cite>"La economía de mercado puede adaptarse gradualmente a nuevas circunstancias sin destruir lo que ya funciona." — F.A. Hayek, La Fatal Arrogancia (1988)</cite>',
+      fx: s => { s.money += 15; s.stability += 10; s.liberty += 5; s.welfare += 5; s.debt += 10; s.satisfaction += 3; }
+    },
+    {
+      id: 'tC2', ideo: 'C',
+      name: 'Diversificación Comercial: Asia y Latam',
+      who: 'Paloma Valencia — 2026',
+      desc: 'Reducir dependencia norteamericana con cinco nuevos acuerdos comerciales.',
+      theory: 'Acemoglu documenta que la dependencia de un socio dominante crea élites extractivas. Hayek señalaría que diversificar democratiza las fuerzas del mercado frente a presiones externas. Mises apoya cualquier ruta que amplíe el comercio libre.<cite>"El comercio internacional es el mejor antídoto contra el nacionalismo y las élites monopolísticas." — Ludwig von Mises, Omnipotencia del Gobierno (1944)</cite>',
+      fx: s => { s.money += 25; s.stability += 8; s.liberty += 5; s.debt += 5; s.satisfaction += 5; }
+    },
+    {
+      id: 'tC3', ideo: 'C',
+      name: 'Paz con Condicionamientos Verificables',
+      who: 'Paloma Valencia — 2026',
+      desc: 'Mantener diálogo con grupos armados exigiendo entrega de armas sin zonas de despeje.',
+      theory: 'Acemoglu señala que los procesos de paz duraderos van acompañados de transformación institucional real, no de impunidad impuesta. Von Mises añadiría que la paz no se negocia regalando la propiedad privada de los ciudadanos a extorsionistas. Platón exigiría sumisión a la ley.<cite>"La paz no es ausencia de conflicto; es presencia de justicia. Sin justicia garantizada, es solo la postergación de la guerra." — Platón, La República (s. IV a.C.)</cite>',
+      fx: s => { s.stability += 12; s.satisfaction += 8; s.welfare += 5; s.money -= 15; s.liberty += 3; },
+      tags: ['security']
+    },
+    {
+      id: 'tC4', ideo: 'C',
+      name: 'Liderazgo Amazónico y Bonos de Carbono',
+      who: 'Paloma Valencia — 2026',
+      desc: 'Monetizar internacionalmente la conservación de la biodiversidad colombiana.',
+      theory: 'Hayek señalaría que externalidades ambientales requieren mecanismos que simulen precios internacionales para evitar el dilema de los comunes. Acemoglu apoya transformar activos "inútiles" en generadores de valor que desincentiven la deforestación extractivista.<cite>"Los bienes comunes solo se preservan cuando alguien tiene un incentivo de mercado real para no consumirlos." — Análisis económico del Amazonas</cite>',
+      fx: s => { s.money += 10; s.satisfaction += 5; s.stability += 5; s.welfare += 5; s.liberty += 2; }
+    },
+    {
+      id: 'tC5', ideo: 'C',
+      name: 'Modernización Militar y Ciberseguridad',
+      who: 'Paloma Valencia — 2026',
+      desc: 'Fuerte inversión en tecnología de inteligencia militar y blindaje cibernético para modernizar la fuerza pública sin engrosar tropas.',
+      theory: 'Acemoglu sugiere en su teoría del "Pasillo Estrecho" que los Estados funcionales deben invertir en capacidad tecnológica para neutralizar amenazas complejas sin tener que recurrir a la represión masiva sobre la sociedad civil.<cite>"El Estado debe ser lo suficientemente fuerte y sofisticado para proteger a sus ciudadanos, pero lo suficientemente amarrado a las leyes para no oprimirlos." — Acemoglu & Robinson, El Pasillo Estrecho (2019)</cite>',
+      fx: s => { s.stability += 12; s.money -= 15; s.liberty -= 2; },
+      tags: ['security']
+    },
+    // ── IZQUIERDA ──
+    {
+      id: 'tL1', ideo: 'L',
+      name: 'Restablecer Relaciones Plenas con Venezuela',
+      who: 'Iván Cepeda — 2026',
+      desc: 'Condenar intervenciones extranjeras y priorizar la paz fronteriza con Caracas.',
+      theory: 'Acemoglu y Robinson advierten que aliarse con regímenes extractivos tiende a importar sus patologías institucionales. Von Mises señalaría que el comercio es deseable, pero ceder soberanía ideológica a un Estado que no respeta contratos es mortal para la estabilidad interna.<cite>"Dime con quién te alías y te diré qué instituciones tendrás. Los vicios del extractivismo se exportan fácilmente a través de la frontera." — Acemoglu & Robinson, Por Qué Fracasan los Países (2012)</cite>',
+      fx: s => { s.money += 15; s.satisfaction += 5; s.stability -= 15; s.liberty -= 10; s.debt += 10; }
+    },
+    {
+      id: 'tL2', ideo: 'L',
+      name: 'Soberanía Energética: Ecopetrol 100% Estatal',
+      who: 'Iván Cepeda — 2026',
+      desc: 'Prohibir contratos con multinacionales y mantener monopolio estatal del subsuelo.',
+      theory: 'Von Mises demostró que la empresa estatal pura enfrenta el problema del cálculo: sin precios competitivos, el gerente estatal no sabe si crea o destruye valor (caso PDVSA). Acemoglu documenta que Estados dependientes del petróleo nacionalizado tienden al clientelismo absoluto.<cite>"La nacionalización no entrega la riqueza al pueblo, la entrega a la casta política que controla el aparato estatal." — Ludwig von Mises, El Socialismo (1922)</cite>',
+      fx: s => { s.money += 20; s.liberty -= 15; s.stability -= 8; s.satisfaction += 8; s.debt += 25; s.welfare += 5; }
+    },
+    {
+      id: 'tL3', ideo: 'L',
+      name: 'Freno Inmediato a Exploración Petrolera',
+      who: 'Iván Cepeda — 2026',
+      desc: 'Detener de golpe nuevas perforaciones para liderar la lucha contra el cambio climático global.',
+      theory: 'Hayek diría que forzar la transición antes de que los sustitutos sean viables es arrogancia planificadora que ignora el precio. Von Mises advertiría que prescindir del único motor fiscal del país en nombre del ambiente es elegir pobreza voluntaria en el corto plazo.<cite>"El intervencionista cree que puede mejorar el mundo destruyendo lo que funciona antes de tener listo lo que va a reemplazarlo." — F.A. Hayek, La Fatal Arrogancia (1988)</cite>',
+      fx: s => { s.money -= 30; s.welfare += 5; s.stability -= 10; s.satisfaction -= 5; s.liberty -= 8; s.debt += 15; }
+    },
+    {
+      id: 'tL4', ideo: 'L',
+      name: 'Renegociar TLC para Proteger al Campesino',
+      who: 'Iván Cepeda — 2026',
+      desc: 'Aranceles fuertes a productos agrícolas subsidiados del primer mundo.',
+      theory: 'Acemoglu documenta que las reglas asimétricas del comercio global (como subsidios gringos) pueden ser instituciones extractivas impuestas a países pobres. Sin embargo, Von Mises recalcaría que el arancel lo paga el consumidor local mediante comida más cara, protegiendo ineficiencias internas.<cite>"El libre comercio requiere reglas equitativas. Cuando un lado subsidia masivamente, no hay mercado libre, sino dominación disfrazada." — Análisis Institucional del Comercio Global</cite>',
+      fx: s => { s.satisfaction += 10; s.money -= 15; s.stability -= 5; s.liberty -= 12; s.welfare += 5; }
+    },
+    {
+      id: 'tL5', ideo: 'L',
+      name: 'Sustitución Voluntaria de Cultivos (PNIS)',
+      who: 'Iván Cepeda — 2026',
+      desc: 'Inversión millonaria para pagar a familias cocaleras a cambio de arrancar la hoja de coca y plantar cultivos legales en zonas controladas por narcos.',
+      theory: 'Mises advertiría que mientras la demanda internacional mantenga artificialmente alto el precio en dólares, los subsidios estatales difícilmente superarán la rentabilidad del mercado negro, convirtiendo el programa en un ciclo de pagos inútil.<cite>"Ningún decreto moral o pago subsidiado puede vencer permanentemente la fuerza avasalladora de los precios formados en la escasez del mercado negro." — Análisis desde Ludwig von Mises, La Acción Humana</cite>',
+      fx: s => { s.welfare += 5; s.money -= 20; s.stability -= 5; s.satisfaction += 5; }
+    },
+    // ── HISTÓRICO ──
+    {
+      id: 'tH1', ideo: 'H',
+      name: 'Firma del TLC Colombia–EE.UU. (2011)',
+      who: 'Álvaro Uribe / Juan Manuel Santos — 2011',
+      desc: 'Tratado histórico que disparó exportaciones pero deprimió agro local.',
+      theory: 'Von Mises aplaudiría la apertura incondicional, mientras que Hayek señalaría las desigualdades a corto plazo para los sectores protegidos. Acemoglu considera los TLC como espadas de doble filo: pueden abrir instituciones pero también destruir economías frágiles.<cite>"El libre comercio crea riqueza agregada, pero sin instituciones de ajuste equitativas, puede exacerbar la desigualdad interna inicial." — Acemoglu & Robinson, Por Qué Fracasan los Países (2012)</cite>',
+      fx: s => { s.money += 25; s.liberty += 15; s.welfare -= 5; s.satisfaction += 5; s.stability += 10; }
+    },
+    {
+      id: 'tH2', ideo: 'H',
+      name: 'Acuerdo de Paz de La Habana (2016)',
+      who: 'Juan Manuel Santos — Nobel 2016',
+      desc: 'Desmovilización histórica de las FARC, reforma rural y participación política.',
+      theory: 'Acemoglu lo vería como intento valiente de convertir zonas extractivas en inclusivas. Hayek criticaría la asimetría jurídica (una ley para el civil, otra para el ex-FARC). Platón argumentaría que la impunidad pactada debilita irremediablemente el respeto por la ley a futuro.<cite>"La paz sin justicia plena es la victoria del más fuerte, o del más violento, disfrazada de reconciliación democrática." — Platón, La República (s. IV a.C.)</cite>',
+      fx: s => { s.stability += 20; s.satisfaction -= 10; s.money -= 25; s.welfare += 5; s.liberty += 3; },
+      tags: ['security']
+    },
+    {
+      id: 'tH3', ideo: 'H',
+      name: 'Cerco Diplomático a Venezuela (2019)',
+      who: 'Iván Duque — 2019',
+      desc: 'Ruptura total de relaciones buscando la caída diplomática del régimen.',
+      theory: 'Platón describió cómo el tirano empobrece a su pueblo hasta que este huye masivamente. Acemoglu usa a Venezuela como el modelo definitivo del colapso institucional. Von Mises apuntaría que el bloqueo externo raramente tumba al tirano, sino que le da excusas.<cite>"El tirano promete dulzura al inicio, pero termina siendo el más esclavo de sus instintos, obligando a su pueblo a huir despavorido." — Platón, La República (s. IV a.C.)</cite>',
+      fx: s => { s.stability -= 10; s.satisfaction += 5; s.money -= 5; s.liberty += 5; s.welfare -= 5; }
+    },
+    {
+      id: 'tH4', ideo: 'H',
+      name: 'Reapertura de Frontera con Venezuela (2022)',
+      who: 'Gustavo Petro — 2022',
+      desc: 'Normalización pragmática del comercio bilateral y canales consulares.',
+      theory: 'Von Mises habría apoyado el comercio fronterizo puro, pero advertido del contagio institucional de dinero ilícito o economías paralelas. Acemoglu señala que el mercado negro prospera entre fronteras dispares, y oficializarlo no siempre legaliza sus prácticas extractivas de fondo.<cite>"El comercio entre naciones con instituciones radicalmente distintas tiende a exportar tanto mercancías como los vicios sistémicos de dichas reglas." — Acemoglu & Robinson, Por Qué Fracasan los Países (2012)</cite>',
+      fx: s => { s.money += 15; s.stability += 5; s.satisfaction -= 5; s.liberty -= 5; s.debt -= 5; }
+    },
+    {
+      id: 'tH5', ideo: 'H',
+      name: 'Extradición por Vía Administrativa (1989)',
+      who: 'Virgilio Barco — 1989',
+      desc: 'Respuesta fulminante al asesinato de Galán, reactivando la extradición de capos por decreto ante un sistema judicial aterrorizado.',
+      theory: 'Acemoglu destaca que cuando el Estado de Derecho es acorralado por la violencia pura, la respuesta ejecutiva de emergencia es el único mecanismo de supervivencia. Platón afirmaría que los enemigos existenciales del orden deben ser extirpados drásticamente.<cite>"Cuando la ley es tomada como rehén por los criminales, la fuerza bruta del gobernante justo es la única defensa de la ciudad." — Platón, adaptado a la defensa del Estado de Derecho</cite>',
+      fx: s => { s.stability += 15; s.satisfaction -= 5; s.money -= 5; s.liberty -= 5; },
+      tags: ['security']
+    },
+  ]
+};
+
+const EVENTS_NORMAL = [
+  { icon:'📢', text:'Paro camionero nacional. Cadenas de suministro bloqueadas.', fx: s=>{ s.stability-=8; s.money-=10; } },
+  { icon:'💼', text:'Inversión extranjera directa récord. Confianza inversionista en alza.', fx: s=>{ s.money+=45; s.stability+=5; } },
+  { icon:'🕵️', text:'Megaescándalo de corrupción en contratos estatales. Renuncias en el gabinete.', fx: s=>{ s.satisfaction-=12; s.stability-=8; } },
+  { icon:'📈', text:'Crecimiento económico del 5.2%. Cifras superan las proyecciones del FMI.', fx: s=>{ s.money+=32; s.satisfaction+=6; } },
+  { icon:'🌪️', text:'Desastre climático arrasa costas del Pacífico colombiano.', fx: s=>{ s.welfare-=10; s.money-=25; } },
+  { icon:'🤝', text:'Acuerdo humanitario en zona de conflicto. Liberación de secuestrados.', fx: s=>{ s.stability+=12; s.satisfaction+=6; } },
+  { icon:'🌾', text:'Cosecha récord de café y cacao. Exportaciones históricas.', fx: s=>{ s.money+=28; s.stability+=5; } },
+  { icon:'💊', text:'Crisis de las EPS: colapso de servicios en 4 regiones del país.', fx: s=>{ s.welfare-=15; s.satisfaction-=10; } },
+  { icon:'🔌', text:'Apagones por sequía prolongada afectan industria y hogares.', fx: s=>{ s.money-=20; s.satisfaction-=8; } },
+  { icon:'🎓', text:'Colombia sube 20 puestos en ranking educativo PISA.', fx: s=>{ s.welfare+=8; s.satisfaction+=5; } },
+  { icon:'💰', text:'Bonanza de remesas desde EE.UU. y España. Dólar sube.', fx: s=>{ s.money+=22; s.satisfaction+=4; } },
+  { icon:'⚔️', text:'Ataque guerrillero destruye tramo de oleoducto.', fx: s=>{ s.money-=18; s.stability-=10; } },
+  { icon:'📱', text:'Exportación de software y videojuegos al mundo. Boom naranja.', fx: s=>{ s.money+=35; s.liberty+=5; } },
+  { icon:'📉', text:'Caída global del precio del petróleo. Ingresos fiscales caen.', fx: s=>{ s.money-=40; s.debt+=15; } },
+  { icon:'🚧', text:'Retrasos en megaobra. Contratistas acusados de corrupción.', fx: s=>{ s.satisfaction-=8; s.stability-=5; } },
+  { icon:'✈️', text:'Récord de turismo internacional. Colombia de moda.', fx: s=>{ s.money+=25; s.stability+=5; } },
+  { icon:'🦠', text:'Brote viral en la costa. Sistema de salud bajo presión.', fx: s=>{ s.welfare-=12; s.money-=15; } },
+  { icon:'🥇', text:'Selección Colombia campeón. El país celebra.', fx: s=>{ s.satisfaction+=15; s.stability+=3; } },
+  { icon:'🚨', text:'Fuga masiva en cárcel de máxima seguridad.', fx: s=>{ s.stability-=15; s.satisfaction-=5; } },
+  { icon:'🚢', text:'Incautación récord en puertos: 50 tons de cocaína.', fx: s=>{ s.stability+=8; s.satisfaction+=4; } },
+];
+
+const EVENTS_CONDITIONAL = [
+  {
+    id: 'cond_migration', icon: '🛶', type: 'conditional',
+    text: '⚠️ EVENTO CONDICIONAL: Ola migratoria masiva por alta satisfacción nacional.',
+    check: (st, tr) => st.satisfaction >= 70, prob: 0.85, probBase: 0.10,
+    fx: s => { s.welfare -= 10; s.satisfaction -= 8; s.money -= 12; s.stability -= 6; }
+  },
+  {
+    id: 'cond_farc', icon: '⚔️', type: 'conditional',
+    text: '⚠️ EVENTO CONDICIONAL: Reactivación armada por ausencia de políticas de seguridad.',
+    check: (st, tr) => tr.securityDecisionsTaken === 0, prob: 0.50, probBase: 0.08,
+    fx: s => { s.stability -= 15; s.satisfaction -= 8; s.money -= 10; s.welfare -= 5; }
+  },
+  {
+    id: 'cond_fmi', icon: '🏦', type: 'conditional',
+    text: '⚠️ EVENTO CONDICIONAL: FMI sube tasa de interés soberana por deuda desbocada.',
+    check: (st, tr) => (st.debt - st.money) >= 300, prob: 0.50, probBase: 0.05,
+    fx: s => { s.debt += 30; s.money -= 15; s.liberty -= 5; s.satisfaction -= 5; }
+  },
+  {
+    id: 'cond_protests', icon: '🔥', type: 'conditional',
+    text: '⚠️ EVENTO CONDICIONAL: Estallido social por insatisfacción acumulada.',
+    check: (st, tr) => tr.lowSatisfactionYears >= 2, prob: 0.40, probBase: 0.05,
+    fx: s => { s.stability -= 18; s.satisfaction -= 10; s.money -= 20; s.liberty -= 8; }
+  },
+];
+
+function startGame(diff) {
+  difficulty = diff;
+  document.getElementById('diff-screen').style.display = 'none';
+  document.getElementById('game').style.display = 'flex';
+  state = { year:1, money:500, debt:600, satisfaction:55, liberty:60, welfare:65, stability:60 };
+  selections = { eco:null, welfare:null, trade:null };
+  chosenHistory = { eco: [], welfare: [], trade: [] };
+  openGroups = { eco:true, welfare:false, trade:false };
+  lowSatisfactionYears = 0;
+  securityDecisionsTaken = 0;
+  migrationDecisionsTaken = 0;
+  renderStats(null);
+  updateYear();
+  const box = document.getElementById('event-box');
+  box.innerHTML = `<div class="ev-item"><span style="font-size:1.2rem">🇨🇴</span><span>Inicia tu mandato. 5 años, 3 decisiones por año. Cada elección cambia el curso de la nación.</span></div>`;
+  buildCards();
+}
+
+function getBalancedCards(group) {
+  const pool = DECISIONS[group].filter(d => !chosenHistory[group].includes(d.id));
+  const R = shuffle(pool.filter(d => d.ideo === 'R')).slice(0, 2);
+  const C = shuffle(pool.filter(d => d.ideo === 'C')).slice(0, 2);
+  const L = shuffle(pool.filter(d => d.ideo === 'L')).slice(0, 2);
+  const H = shuffle(pool.filter(d => d.ideo === 'H')).slice(0, 2);
+  return shuffle([...R, ...C, ...L, ...H]);
+}
+
+function buildCards() {
+  ['eco', 'welfare', 'trade'].forEach(group => {
+    const wrap = document.getElementById('cards-' + group);
+    wrap.innerHTML = '';
+    const turnCards = getBalancedCards(group);
+    turnCards.forEach(d => {
+      const ac2map = { R:'var(--tag-r)', C:'var(--tag-c)', L:'var(--tag-l)', H:'var(--tag-h)' };
+      const tagLabel = { R:'Derecha', C:'Centro', L:'Izquierda', H:'Histórico' };
+      const card = document.createElement('div');
+      card.className = 'choice-card';
+      card.style.setProperty('--ac2', ac2map[d.ideo]);
+      card.setAttribute('data-group', group);
+      card.setAttribute('data-id', d.id);
+      
+      card.onclick = () => { selectCard(group, d.id, card); };
+      
+      const efxHtml = buildEffects(d.fx, d.ideo);
+      card.innerHTML = `
+        <span class="card-tag tag-${d.ideo}">${tagLabel[d.ideo]}</span>
+        <span class="card-name">${d.name}</span>
+        <span class="card-who">📌 ${d.who}</span>
+        <span class="card-desc">${d.desc}</span>
+        <p class="card-theory">${d.theory}</p>
+        <div class="card-effects">${efxHtml}</div>`;
+      wrap.appendChild(card);
+    });
+    applyDisplayState(group);
+  });
+}
+
+function buildEffects(fx, ideo) {
+  const dummy = { money:0, debt:0, satisfaction:0, liberty:0, welfare:0, stability:0 };
+  const dummyProxy = new Proxy(dummy, { set(t,p,v) { t[p]=v; return true; } });
+  fx(dummyProxy);
+  if (ideo === 'L') {
+    const mult = difficulty === 'normal' ? 1.2 : difficulty === 'dificil' ? 1.5 : 1.0;
+    if (dummy.money < 0) dummy.money = Math.round(dummy.money * mult);
+    if (dummy.debt > 0) dummy.debt = Math.round(dummy.debt * mult);
+  }
+  const labels = { money:'💰Dinero', debt:'📉Deuda', satisfaction:'😊Satisf.', liberty:'🗽Libertad', welfare:'🏥Bienestar', stability:'⚖️Estabilidad' };
+  return Object.entries(dummy).map(([k,v]) => {
+    if (v === 0) return '';
+    const cls = (k === 'debt') ? (v < 0 ? 'pos' : 'neg') : (v > 0 ? 'pos' : 'neg');
+    return `<span class="eff ${cls}">${labels[k]} ${v>0?'+':''}${v}</span>`;
+  }).join('');
+}
+
+function toggleGroup(group) {
+  openGroups[group] = !openGroups[group];
+  applyDisplayState(group);
+}
+
+function applyDisplayState(group) {
+  const wrap = document.getElementById('cards-' + group);
+  wrap.style.display = openGroups[group] ? 'grid' : 'none';
+  const hdr = document.querySelector(`#grp-${group} .decision-header`);
+  if (hdr) hdr.classList.toggle('open', openGroups[group]);
+}
+
+function selectCard(group, id, card) {
+  document.querySelectorAll(`[data-group="${group}"]`).forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  selections[group] = id;
+  document.getElementById('sel-' + group).classList.add('show');
+  openGroups[group] = false; applyDisplayState(group);
+  if (group === 'eco')     { openGroups['welfare'] = true; applyDisplayState('welfare'); }
+  if (group === 'welfare') { openGroups['trade'] = true;   applyDisplayState('trade'); }
+  if (selections.eco && selections.welfare && selections.trade) {
+    document.getElementById('next-btn').disabled = false;
+  }
+}
+
+function advanceYear() {
+  if (!selections.eco || !selections.welfare || !selections.trade) return;
+  const prev = JSON.parse(JSON.stringify(state));
+
+  ['eco', 'welfare', 'trade'].forEach(group => {
+    const id = selections[group];
+    const dec = DECISIONS[group].find(d => d.id === id);
+    chosenHistory[group].push(id); 
+    
+    const moneyBefore = state.money;
+    dec.fx(state);
+    
+    if (dec.ideo === 'L') {
+      const diff = state.money - moneyBefore;
+      if (diff < 0) {
+        const mult = difficulty === 'normal' ? 0.2 : difficulty === 'dificil' ? 0.5 : 0;
+        state.money -= Math.abs(diff) * mult;
+      }
+      const debtDiff = state.debt - prev.debt;
+      if (debtDiff > 0 && difficulty !== 'facil') {
+        const mult = difficulty === 'normal' ? 0.2 : 0.5;
+        state.debt += debtDiff * mult;
+      }
+    }
+    if (dec.tags && dec.tags.includes('security')) securityDecisionsTaken++;
+    if (dec.tags && dec.tags.includes('anti_migration')) migrationDecisionsTaken++;
+  });
+
+  if (state.stability < 30) { state.satisfaction -= 10; state.money -= 20; }
+  if (state.debt > 800)     { state.satisfaction -= 6;  state.stability -= 6; }
+  if (state.stability > 80) { state.money += 12; state.satisfaction += 4; }
+
+  if (state.satisfaction < 40) lowSatisfactionYears++;
+  else lowSatisfactionYears = 0;
+
+  triggerEvents();
+
+  const clamp = (v,lo,hi) => Math.max(lo,Math.min(hi,v));
+  state.money = clamp(state.money, -9999, 9999);
+  state.debt  = clamp(state.debt, 0, 9999);
+  ['satisfaction','liberty','welfare','stability'].forEach(k => state[k] = clamp(state[k],0,100));
+
+  renderStats(prev);
+  state.year++;
+  updateYear();
+
+  selections = { eco:null, welfare:null, trade:null };
+  openGroups = { eco:true, welfare:false, trade:false };
+  ['eco','welfare','trade'].forEach(g => document.getElementById('sel-'+g).classList.remove('show'));
+  document.getElementById('next-btn').disabled = true;
+
+  if (state.year > 5) { setTimeout(showFinal, 800); }
+  else { buildCards(); }
+}
+
+function triggerEvents() {
+  const box = document.getElementById('event-box');
+  box.innerHTML = '';
+  const eventCount = difficulty === 'facil' ? 2 : difficulty === 'normal' ? 3 : 4;
+  const trackers = { lowSatisfactionYears, securityDecisionsTaken, migrationDecisionsTaken };
+
+  const condEvents = [];
+  EVENTS_CONDITIONAL.forEach(ev => {
+    const prob = ev.check(state, trackers) ? ev.prob : ev.probBase;
+    if (Math.random() < prob) condEvents.push(ev);
+  });
+
+  let normalCount = eventCount - condEvents.length;
+  if (normalCount < 0) normalCount = 0;
+  const normalEvents = shuffle([...EVENTS_NORMAL]).slice(0, normalCount);
+
+  const allEvents = [...condEvents, ...normalEvents];
+  allEvents.forEach(ev => {
+    ev.fx(state);
+    const div = document.createElement('div');
+    div.className = 'ev-item' + (ev.type === 'conditional' ? ' ev-conditional' : '');
+    div.innerHTML = `<span style="font-size:1.1rem">${ev.icon}</span><span>${ev.text}</span>`;
+    box.appendChild(div);
+  });
+  box.style.animation = 'none'; void box.offsetWidth; box.style.animation = 'fadeUp .4s ease';
+}
+
+function renderStats(prev) {
+  const fields = [
+    { key:'money',        id:'money',        max:1200, col:v => v>400?'#d4a832':v>150?'#e8b830':'#d44030' },
+    { key:'debt',         id:'debt',         max:1200, col:v => v<500?'#3fa85f':v<750?'#e8b830':'#d44030' },
+    { key:'satisfaction', id:'satisfaction', max:100,  col:v => v>=65?'#3fa85f':v>=40?'#e8b830':'#d44030' },
+    { key:'liberty',      id:'liberty',      max:100,  col:v => v>=60?'#3a7ec8':v>=35?'#e8b830':'#d44030' },
+    { key:'welfare',      id:'welfare',      max:100,  col:v => v>=65?'#3fa85f':v>=40?'#e8b830':'#d44030' },
+    { key:'stability',    id:'stability',    max:100,  col:v => v>=55?'#b07028':v>=30?'#e8b830':'#d44030' },
+  ];
+  fields.forEach(f => {
+    const v = Math.round(state[f.key]);
+    document.getElementById('val-' + f.id).textContent = v;
+    const pct = Math.min(100, Math.max(0, (Math.abs(v) / f.max) * 100));
+    const bar = document.getElementById('bar-' + f.id);
+    bar.style.width = pct + '%'; bar.style.background = f.col(v);
+    if (prev) {
+      const d = Math.round(state[f.key] - prev[f.key]);
+      if (d !== 0) {
+        const el = document.getElementById('delta-' + f.id);
+        el.textContent = (d > 0 ? '+' : '') + d;
+        el.style.color = (f.key === 'debt') ? (d<0?'#3fa85f':'#d44030') : (d>0?'#3fa85f':'#d44030');
+        el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 2800);
+      }
+    }
+  });
+}
+
+function updateYear() {
+  const yr = Math.min(state.year, 5);
+  document.getElementById('year-banner').textContent = `AÑO ${yr} DE 5`;
+  document.getElementById('progress-fill').style.width = ((yr-1)/4*100) + '%';
+  if (state.year > 5) document.getElementById('next-btn').style.display = 'none';
+  else document.getElementById('next-btn').style.display = 'block';
+}
+
+function showFinal() {
+  const s = state;
+  const win = s.debt <= 700 && s.satisfaction >= 65;
+  let emoji, badge, color, text, reflection;
+
+  if (s.stability < 25) {
+    emoji = '💣'; badge = 'CRISIS INSTITUCIONAL'; color = '#8e44ad';
+    text = 'El Estado colombiano perdió el monopolio legítimo de la fuerza en amplios territorios. Los grupos armados llenan el vacío y la inversión huyó. Tu mandato será estudiado como el caso clásico de colapso institucional progresivo.';
+    reflection = `Acemoglu y Robinson son brutalmente claros: los países no colapsan de un día para otro, sino por la acumulación de decisiones extractivas que van vaciando al Estado. Von Mises advirtió que cada intervención errónea crea presiones que culminan en el caos total. Platón describió este ciclo hace milenios: la democracia mal gobernada degenera en anarquía y luego en tiranía.<cite>"La tiranía surge naturalmente de la democracia corrompida por el desorden y el engaño." — Platón, La República, Libro VIII</cite>`;
+  } else if (win) {
+    emoji = '🏆'; badge = 'GOBIERNO BALANCEADO'; color = '#27ae60';
+    text = 'Lograste lo que pocos consiguen: cuentas sanas, pueblo satisfecho e instituciones más sólidas que las que recibiste. Colombia cierra tu mandato atrayendo inversión global y consolidando su clase media.';
+    reflection = `Acemoglu y Robinson concluyen su obra maestra con una lección que tu gobierno demostró en la práctica: las naciones prosperan cuando crean instituciones inclusivas, leyes predecibles y competencia. Hayek reconocería que tu mayor mérito fue resistir la "fatal arrogancia" del intervencionista.<cite>"El gobernante justo ejerce el poder con moderación porque sabe que la ciudad le pertenece a sus ciudadanos, no a él." — Platón, La República, Libro IV</cite>`;
+  } else if (s.satisfaction >= 65 && s.debt > 700) {
+    emoji = '🎉'; badge = 'POPULAR PERO ENDEUDADO'; color = '#f39c12';
+    text = 'Las calles se llenaron de banderas y encuestas aprobatorias. Pero dejaste una deuda histórica de proporciones insostenibles. Tu sucesor heredará el ajuste inevitable.';
+    reflection = `Von Mises fue profético: el Estado paternalista y expansivo es el mecanismo mediante el cual se quema el capital acumulado por generaciones anteriores. Hayek señaló que la política populista gasta hoy dejando el pago al futuro sin consentimiento.<cite>"El demagogo promete al pueblo lo que quiere oír. El estadista dice lo que necesita escuchar. Por eso el demagogo gana las elecciones, pero pierde el país." — Análisis inspirado en La República, Libro VIII</cite>`;
+  } else if (s.debt <= 700 && s.satisfaction < 65) {
+    emoji = '📊'; badge = 'ORDENADO PERO IMPOPULAR'; color = '#3498db';
+    text = 'Las finanzas quedaron en perfecto orden y controlaste la deuda. Los bancos aplaudieron tu ortodoxia. Sin embargo, el pueblo no sintió empatía y abandonas el poder con altísima impopularidad.';
+    reflection = `Hayek advertía que existe una diferencia crucial entre eficiencia técnica y una sociedad armónica. Acemoglu señala que si la prosperidad no es inclusiva, la gente termina dudando de la legitimidad del sistema. Un gobernante que solo escucha al libro contable pierde la calle.<cite>"La ciudad que solo persigue la riqueza material pierde la armonía y la lealtad cívica que la sostiene frente a la adversidad." — Platón, La República</cite>`;
+  } else {
+    emoji = '💸'; badge = 'CRISIS FISCAL'; color = '#c0392b';
+    text = 'Deuda desbocada, pueblo insatisfecho, inversión extranjera en fuga. El peso se devaluó críticamente. Tu gobierno es un manual de lo que ocurre cuando se combinan excesos fiscales y desinstitucionalización.';
+    reflection = `Ludwig von Mises dedicó su vida a explicar este escenario exacto: gastar el dinero que no existe rompe el mecanismo de precios. La expansión fiscal populista genera auge efímero y un derrumbe sostenido en el bienestar ciudadano.<cite>"El gobernante arrogante cree que con decretos puede derogar la ley de la oferta y la demanda; la economía termina cobrándole la osadía al pueblo." — Adaptado del análisis liberal de F.A. Hayek y L. von Mises</cite>`;
+  }
+
+  document.getElementById('fin-emoji').textContent = emoji;
+  const gb = document.getElementById('govt-badge');
+  gb.textContent = badge; gb.style.background = color+'25'; gb.style.color = color; gb.style.border = `1px solid ${color}`;
+  document.getElementById('fin-text').textContent = text;
+  document.getElementById('fin-reflection').innerHTML = reflection;
+  
+  document.getElementById('fs-money').textContent = Math.round(s.money);
+  document.getElementById('fs-debt').textContent  = Math.round(s.debt);
+  document.getElementById('fs-sat').textContent   = Math.round(s.satisfaction);
+  document.getElementById('fs-lib').textContent   = Math.round(s.liberty);
+  document.getElementById('fs-wel').textContent   = Math.round(s.welfare);
+  document.getElementById('fs-stab').textContent  = Math.round(s.stability);
+
+  // CONSTRUCCIÓN DEL RECAP
+  const categories = [
+    { key: 'eco', label: 'POLÍTICA ECONÓMICA', arr: DECISIONS.eco },
+    { key: 'welfare', label: 'BIENESTAR SOCIAL', arr: DECISIONS.welfare },
+    { key: 'trade', label: 'EXTERIOR Y SEGURIDAD', arr: DECISIONS.trade }
+  ];
+
+  let recapHtml = `
+    <h3 style="color:var(--gold); margin-top:20px; font-family:'Bebas Neue'; font-size:1.8rem; border-bottom:1px solid var(--gold-dim); padding-bottom:8px; margin-bottom:15px; letter-spacing:2px;">
+      📋 RECAPITULACIÓN DEL MANDATO
+    </h3>
+    <div style="display:flex; flex-direction:column; gap:18px; text-align:left;">
+  `;
+
+  for (let i = 0; i < 5; i++) {
+    // Si no alcanzó a terminar los 5 años, prevenimos error
+    if (!chosenHistory.eco[i]) break; 
+
+    recapHtml += `
+      <div style="background:rgba(0,0,0,0.3); padding:15px 12px; border-radius:8px; border-left:4px solid var(--gold); border-top:1px solid var(--border); border-right:1px solid var(--border); border-bottom:1px solid var(--border);">
+        <h4 style="color:var(--gold2); font-family:'Bebas Neue'; font-size:1.5rem; letter-spacing:2px; margin-bottom:12px;">
+          ⚖️ DECISIONES DEL AÑO ${i+1}
+        </h4>
+    `;
+
+    categories.forEach(cat => {
+      const decId = chosenHistory[cat.key][i];
+      const dec = cat.arr.find(d => d.id === decId);
+      if (dec) {
+        recapHtml += `
+          <div style="margin-bottom:15px; background:rgba(255,255,255,0.03); padding:10px; border-radius:6px;">
+            <strong style="color:var(--white); font-family:'Barlow Condensed'; font-size:1.1rem; text-transform:uppercase;">
+              [${cat.label}] ${dec.name}
+            </strong>
+            <div style="font-size:0.85rem; color:#b09a65; margin-top:6px; line-height:1.5; font-style:italic;">
+              ${dec.theory}
+            </div>
+          </div>
+        `;
+      }
+    });
+    recapHtml += `</div>`;
+  }
+  recapHtml += `</div>`;
+  
+  document.getElementById('fin-recap').innerHTML = recapHtml;
+  document.getElementById('final-screen').style.display = 'flex';
+}
+
+function restartGame() {
+  document.getElementById('final-screen').style.display = 'none';
+  document.getElementById('game').style.display = 'none';
+  document.getElementById('next-btn').style.display = 'block';
+  document.getElementById('next-btn').disabled = true;
+  document.getElementById('diff-screen').style.display = 'flex';
+  document.getElementById('year-banner').textContent = 'AÑO 1 DE 5';
+  document.getElementById('progress-fill').style.width = '0%';
+}
+</script>
+</body>
+</html>
+    
+  </body>
+  
+</html>
